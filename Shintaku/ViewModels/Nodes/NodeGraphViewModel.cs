@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Avalonia;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using QuadTrees;
 using ReactiveUI;
@@ -17,18 +18,27 @@ public partial class NodeGraphViewModel : ViewModelBase
 
     public NodeGraphViewModel()
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 200; i++)
         {
             var kX = _rnd.NextDouble() * 1000;
             var kY = _rnd.NextDouble() * 1000;
-            var kW = _rnd.NextDouble() * 1000;
-            var kH = _rnd.NextDouble() * 1000;
+            var kW = Math.Max(25,_rnd.NextDouble() * 100);
+            var kH = Math.Max(25,_rnd.NextDouble() * 100);
+
+            var candidate = new Rect(kX, kY, kW, kH);
+
+            if (_nodes.GetObjects(candidate.Inflate(10)).Count > 0)
+            {
+                i--;
+                continue;
+            }
             
-            _nodes.Add(new NodeViewModel(new Rect(kX, kY, kW, kH)));
+            _nodes.Add(new NodeViewModel(candidate));
         }
 
         this.WhenAnyValue(x => x.CurrentViewPort)
             .Subscribe(ViewPortUpdated);
+         
     }
 
     private void ViewPortUpdated(Rect curView)

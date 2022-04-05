@@ -5,7 +5,7 @@ using Avalonia.Input;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Avalonia.Media;
 using Shintaku.ViewModels.Nodes;
 
 namespace Shintaku.Controls;
@@ -60,7 +60,36 @@ public class NodeGraphControl : TemplatedControl
 
         _canvas.WhenAnyValue(x => x.Bounds)
             .Subscribe(CanvasBoundsChanged);
+
+        this.WhenAnyValue(x => x.VisibleNodes)
+            .Subscribe(NewVisibleNodes);
     }
+
+    private void NewVisibleNodes(List<NodeViewModel> newList)
+    {
+        if (_canvas is null)
+        {
+            return;
+        }
+        
+        _canvas.Children.Clear();
+
+        foreach (var nodeViewModel in newList)
+        {
+            var newContent = new Panel();
+            newContent.DataContext = nodeViewModel;
+             
+            var finalPos = nodeViewModel.Rect.Position - _viewPort.Position;
+            Canvas.SetLeft(newContent, finalPos.X);
+            Canvas.SetTop(newContent, finalPos.Y);
+            newContent.Width = nodeViewModel.Rect.Width;
+            newContent.Height = nodeViewModel.Rect.Height;
+            newContent.Background= Brushes.Aqua;
+            
+            _canvas.Children.Add(newContent);
+        }
+    }
+
 
     private void CanvasBoundsChanged(Rect currentBounds)
     {
