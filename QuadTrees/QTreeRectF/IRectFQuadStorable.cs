@@ -1,4 +1,6 @@
 
+using Avalonia;
+
 namespace QuadTrees.QTreeRectF
 {
     /// <summary>
@@ -7,8 +9,8 @@ namespace QuadTrees.QTreeRectF
     public interface IRectFQuadStorable
     {
         /// <summary>
-        /// The RectangleF that defines the object's boundaries.
+        /// The Rect that defines the object's boundaries.
         /// </summary>
-        RectangleF Rect { get; }
+        Rect Rect { get; }
     }
 }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 
 namespace QuadTrees.Common
 {
@@ -17,7 +18,7 @@ namespace QuadTrees.Common
         // The root of this quad tree
         protected readonly TNode QuadTreePointRoot;
 
-        protected abstract TNode CreateNode(RectangleF rect);
+        protected abstract TNode CreateNode(Rect rect);
 
         /// <summary>
         /// Initialize a QuadTree covering the full range of values possible
@@ -25,14 +26,14 @@ namespace QuadTrees.Common
         protected QuadTreeFCommon()
         {
             QuadTreePointRoot =
-                CreateNode(new RectangleF(float.MinValue/2, float.MinValue/2, float.MaxValue, float.MaxValue));
+                CreateNode(new Rect(double.MinValue/2, double.MinValue/2, double.MaxValue, double.MaxValue));
         } 
 
         /// <summary>
         /// Creates a QuadTree for the specified area.
         /// </summary>
         /// <param name="rect">The area this QuadTree object will encompass.</param>
-        protected QuadTreeFCommon(RectangleF rect)
+        protected QuadTreeFCommon(Rect rect)
         {
             QuadTreePointRoot = CreateNode(rect);
         }
@@ -45,15 +46,15 @@ namespace QuadTrees.Common
         /// <param name="y">The top-right position of the area rectangle.</param>
         /// <param name="width">The width of the area rectangle.</param>
         /// <param name="height">The height of the area rectangle.</param>
-        protected QuadTreeFCommon(float x, float y, float width, float height)
+        protected QuadTreeFCommon(double x, double y, double width, double height)
         {
-            QuadTreePointRoot = CreateNode(new RectangleF(x, y, width, height));
+            QuadTreePointRoot = CreateNode(new Rect(x, y, width, height));
         }
 
         /// <summary>
-        /// Gets the RectangleF that bounds this QuadTree
+        /// Gets the Rect that bounds this QuadTree
         /// </summary>
-        public RectangleF QuadRect
+        public Rect QuadRect
         {
             get { return QuadTreePointRoot.QuadRect; }
         }
@@ -61,7 +62,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="rect">The RectangleF to find objects in.</param>
+        /// <param name="rect">The Rect to find objects in.</param>
         public List<TObject> GetObjects(TQuery rect)
         {
             return QuadTreePointRoot.GetObjects(rect);
@@ -81,7 +82,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="rect">The RectangleF to find objects in.</param>
+        /// <param name="rect">The Rect to find objects in.</param>
         /// <param name="results">A reference to a list that will be populated with the results.</param>
         public void GetObjects(TQuery rect, List<TObject> results)
         {

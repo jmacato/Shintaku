@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using QuadTrees.QTreePointF;
+using Avalonia;
+using QuadTrees.QTreePoint;
 
 namespace QuadTrees.Wrappers
 {
     /// <summary>
     /// A simple container for a point in a QuadTree
     /// </summary>
-    public struct QuadTreePointFWrapper: IPointFQuadStorable
+    public struct QuadTreePointWrapper: IPointQuadStorable
     {
-        private PointF _point;
+        private Point _point;
 
-        public PointF Point
+        public Point Point
         {
             get { return _point; }
         }
 
-        public QuadTreePointFWrapper(PointF point)
+        public QuadTreePointWrapper(Point point)
         {
             _point = point;
         }

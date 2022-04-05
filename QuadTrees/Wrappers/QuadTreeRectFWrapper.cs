@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia;
 using QuadTrees.QTreeRectF;
 
 namespace QuadTrees.Wrappers
@@ -12,14 +13,14 @@ namespace QuadTrees.Wrappers
     /// </summary>
     public struct QuadTreeRectFWrapper : IRectFQuadStorable
     {
-        private RectangleF _rect;
+        private Rect _rect;
 
-        public RectangleF Rect
+        public Rect Rect
         {
             get { return _rect; }
         }
 
-        public QuadTreeRectFWrapper(RectangleF rect)
+        public QuadTreeRectFWrapper(Rect rect)
         {
             _rect = rect;
         }

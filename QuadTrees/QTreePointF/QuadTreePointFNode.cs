@@ -1,52 +1,53 @@
 using System.Diagnostics;
+using Avalonia;
 using QuadTrees.Common;
 using QuadTrees.QTreeRectF;
 
-namespace QuadTrees.QTreePointF
+namespace QuadTrees.QTreePoint
 {
     /// <summary>
     /// A QuadTree Object that provides fast and efficient storage of objects in a world space.
     /// </summary>
     /// <typeparam name="T">Any object implementing IQuadStorable.</typeparam>
-    public class QuadTreePointFNode<T> : QuadTreeFNodeCommon<T, QuadTreePointFNode<T>> where T : IPointFQuadStorable
+    public class QuadTreePointNode<T> : QuadTreeFNodeCommon<T, QuadTreePointNode<T>> where T : IPointQuadStorable
     {
-        public QuadTreePointFNode(RectangleF rect)
+        public QuadTreePointNode(Rect rect)
             : base(rect)
         {
         }
 
-        public QuadTreePointFNode(float x, float y, float width, float height)
+        public QuadTreePointNode(double x, double y, double width, double height)
             : base(x, y, width, height)
         {
         }
 
-        internal QuadTreePointFNode(QuadTreePointFNode<T> parent, RectangleF rect)
+        internal QuadTreePointNode(QuadTreePointNode<T> parent, Rect rect)
             : base(parent, rect)
         {
         }
 
-        protected override QuadTreePointFNode<T> CreateNode(RectangleF rectangleF)
+        protected override QuadTreePointNode<T> CreateNode(Rect Rect)
         {
-            VerifyNodeAssertions(rectangleF);
-            return new QuadTreePointFNode<T>(this, rectangleF);
+            VerifyNodeAssertions(Rect);
+            return new QuadTreePointNode<T>(this, Rect);
         }
 
-        protected override bool CheckContains(RectangleF rectangleF, T data)
+        protected override bool CheckContains(Rect Rect, T data)
         {
-            return rectangleF.Contains(data.Point);
+            return Rect.Contains(data.Point);
         }
 
-        public override bool ContainsObject(QuadTreeObject<T, QuadTreePointFNode<T>> qto)
+        public override bool ContainsObject(QuadTreeObject<T, QuadTreePointNode<T>> qto)
         {
             return CheckContains(QuadRect, qto.Data);
         }
 
-        protected override bool CheckIntersects(RectangleF searchRect, T data)
+        protected override bool CheckIntersects(Rect searchRect, T data)
         {
             return CheckContains(searchRect, data);
         }
 
-        protected override PointF GetMortonPoint(T p)
+        protected override Point GetMortonPoint(T p)
         {
             return p.Point;
         }

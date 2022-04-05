@@ -1,14 +1,16 @@
 
-namespace QuadTrees.QTreePointF
+using Avalonia;
+
+namespace QuadTrees.QTreePoint
 {
     /// <summary>
     /// Interface to define Rect, so that QuadTree knows how to store the object.
     /// </summary>
-    public interface IPointFQuadStorable
+    public interface IPointQuadStorable
     {
         /// <summary>
-        /// The PointF that defines the object's boundaries.
+        /// The Point that defines the object's boundaries.
         /// </summary>
-        PointF Point { get; }
+        Point Point { get; }
     }
 }
