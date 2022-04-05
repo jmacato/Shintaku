@@ -30,8 +30,6 @@ namespace QuadTrees.Common
     public abstract class QuadTreeNodeCommon<T, TNode, TQuery> : QuadTreeNodeCommon
         where TNode : QuadTreeNodeCommon<T, TNode, TQuery>
     {
-        #region Private Members
-
         private QuadTreeObject<T, TNode>[] _objects = null;
         private int _objectCount = 0;
 
@@ -41,10 +39,6 @@ namespace QuadTrees.Common
         private TNode _childTr = null; // Top Right Child
         private TNode _childBl = null; // Bottom Left Child
         private TNode _childBr = null; // Bottom Right Child
-
-        #endregion
-
-        #region Public Properties
 
         public Point CenterPoint
         {
@@ -124,10 +118,6 @@ namespace QuadTrees.Common
             internal set { _parent = value; }
         }
 
-        #endregion
-
-        #region Constructor
-
         /// <summary>
         /// Creates a QuadTree for the specified area.
         /// </summary>
@@ -156,10 +146,6 @@ namespace QuadTrees.Common
         {
             _parent = parent;
         }
-
-        #endregion
-
-        #region Private Members
 
         /// <summary>
         /// Add an item to the object list.
@@ -746,16 +732,12 @@ namespace QuadTrees.Common
             }
         }
 
-        #endregion
-
         public bool ContainsPoint(Point point)
         {
             return Rect.Contains(point);
         }
 
         public abstract bool ContainsObject(QuadTreeObject<T, TNode> qto);
-
-        #region Internal Methods
 
         private void ClearChildren()
         {
@@ -1221,8 +1203,6 @@ namespace QuadTrees.Common
                 }
             }
         }*/
-
-        #endregion
     }
 
     public abstract class QuadTreeNodeCommonPoint<T, TNode> : QuadTreeNodeCommon<T, TNode, Point>

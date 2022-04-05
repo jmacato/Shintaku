@@ -10,8 +10,6 @@ namespace QuadTrees.Common
 {
     public abstract class QuadTreeFCommon<TObject, TNode, TQuery> : ICollection<TObject> where TNode : QuadTreeFNodeCommon<TObject, TNode, TQuery>
     {
-        #region Private Members
-
         internal readonly Dictionary<TObject, QuadTreeObject<TObject, TNode>> WrappedDictionary = new Dictionary<TObject, QuadTreeObject<TObject, TNode>>();
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         // Alternate method, use Parallel arrays
@@ -19,11 +17,7 @@ namespace QuadTrees.Common
         // The root of this quad tree
         protected readonly TNode QuadTreePointRoot;
 
-        #endregion
-
         protected abstract TNode CreateNode(RectangleF rect);
-
-        #region Constructor
 
         /// <summary>
         /// Initialize a QuadTree covering the full range of values possible
@@ -55,10 +49,6 @@ namespace QuadTrees.Common
         {
             QuadTreePointRoot = CreateNode(new RectangleF(x, y, width, height));
         }
-
-        #endregion
-
-        #region Public Methods
 
         /// <summary>
         /// Gets the RectangleF that bounds this QuadTree
@@ -138,10 +128,6 @@ namespace QuadTrees.Common
             Debug.Assert(WrappedDictionary.Count == QuadTreePointRoot.Count);
             return false;
         }
-
-        #endregion
-
-        #region ICollection<T> Members
 
         ///<summary>
         ///Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -338,10 +324,6 @@ namespace QuadTrees.Common
             return ret;
         }
 
-        #endregion
-
-        #region IEnumerable<T> and IEnumerable Members
-
         ///<summary>
         ///Returns an enumerator that iterates through the collection.
         ///</summary>
@@ -368,8 +350,6 @@ namespace QuadTrees.Common
         {
             return this.GetEnumerator();
         }
-
-        #endregion
 
         /// <summary>
         /// Add a range of objects to the Quad Tree
