@@ -54,10 +54,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Gets the Rect that bounds this QuadTree
         /// </summary>
-        public Rect QuadRect
-        {
-            get { return QuadTreePointRoot.QuadRect; }
-        }
+        public Rect QuadRect => QuadTreePointRoot.QuadRect;
 
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
@@ -198,18 +195,12 @@ namespace QuadTrees.Common
         ///<returns>
         ///The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
         ///</returns>
-        public int Count
-        {
-            get { return WrappedDictionary.Count; }
-        }
+        public int Count => WrappedDictionary.Count;
 
         /// <summary>
         /// Count the number of nodes in the tree
         /// </summary>
-        public int CountNodes
-        {
-            get { return QuadTreePointRoot.CountNodes; }
-        }
+        public int CountNodes => QuadTreePointRoot.CountNodes;
 
         ///<summary>
         ///Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
@@ -219,10 +210,7 @@ namespace QuadTrees.Common
         ///true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
         ///</returns>
         ///
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         ///<summary>
         ///Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.

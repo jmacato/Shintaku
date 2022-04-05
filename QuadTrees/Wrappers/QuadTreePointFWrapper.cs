@@ -15,10 +15,7 @@ namespace QuadTrees.Wrappers
     {
         private Point _point;
 
-        public Point Point
-        {
-            get { return _point; }
-        }
+        public Point Point => _point;
 
         public QuadTreePointWrapper(Point point)
         {

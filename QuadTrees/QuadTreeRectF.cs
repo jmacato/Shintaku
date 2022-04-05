@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using QuadTrees.Common;
 using QuadTrees.QTreeRectF;
 
@@ -15,6 +16,10 @@ namespace QuadTrees
         }
 
         public QuadTreeRectF(double x, double y, double width, double height) : base(x, y, width, height)
+        {
+        }
+
+        public QuadTreeRectF() : base(double.MinValue / 2, double.MinValue / 2, double.MaxValue, double.MaxValue)
         {
         }
 

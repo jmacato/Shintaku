@@ -15,10 +15,7 @@ namespace QuadTrees.Wrappers
     {
         private Rect _rect;
 
-        public Rect Rect
-        {
-            get { return _rect; }
-        }
+        public Rect Rect => _rect;
 
         public QuadTreeRectFWrapper(Rect rect)
         {

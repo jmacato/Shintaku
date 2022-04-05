@@ -22,10 +22,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// The area this QuadTree represents.
         /// </summary>
-        internal virtual Rect QuadRect
-        {
-            get { return Rect; }
-        }
+        internal virtual Rect QuadRect => Rect;
     }
 
     public abstract class QuadTreeFNodeCommon<T, TNode, TQuery> : QuadTreeFNodeCommon
@@ -41,10 +38,7 @@ namespace QuadTrees.Common
         private TNode _childBl = null; // Bottom Left Child
         private TNode _childBr = null; // Bottom Right Child
 
-        public Point CenterPoint
-        {
-            get { return _childBr.Rect.Position; }
-        }
+        public Point CenterPoint => _childBr.Rect.Position;
 
         /// <summary>
         /// How many total objects are contained within this QuadTree (ie, includes children)
@@ -88,35 +82,20 @@ namespace QuadTrees.Common
         /// <summary>
         /// Returns true if this is a empty leaf node
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return ChildTl == null && _objectCount == 0; }
-        }
+        public bool IsEmpty => ChildTl == null && _objectCount == 0;
 
-        public TNode ChildTl
-        {
-            get { return _childTl; }
-        }
+        public TNode ChildTl => _childTl;
 
-        public TNode ChildTr
-        {
-            get { return _childTr; }
-        }
+        public TNode ChildTr => _childTr;
 
-        public TNode ChildBl
-        {
-            get { return _childBl; }
-        }
+        public TNode ChildBl => _childBl;
 
-        public TNode ChildBr
-        {
-            get { return _childBr; }
-        }
+        public TNode ChildBr => _childBr;
 
         public TNode Parent
         {
-            get { return _parent; }
-            internal set { _parent = value; }
+            get => _parent;
+            internal set => _parent = value;
         }
 
         /// <summary>

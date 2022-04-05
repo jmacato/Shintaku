@@ -13,18 +13,15 @@ namespace QuadTrees.Common
         /// <summary>
         /// The wrapped data value
         /// </summary>
-        public T Data
-        {
-            get { return _data; }
-        }
+        public T Data => _data;
 
         /// <summary>
         /// The QuadTreeNode that owns this object
         /// </summary>
         internal TPointNode Owner
         {
-            get { return _owner; }
-            set { _owner = value; }
+            get => _owner;
+            set => _owner = value;
         }
 
         /// <summary>
