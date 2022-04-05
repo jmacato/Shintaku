@@ -9,15 +9,16 @@
              x:Class="Shintaku.Views.MainView"
              Foreground="White"
              Background="#171C2C">
-  <Design.DataContext>
-    <viewModels:MainViewModel />
-  </Design.DataContext>
+    <Design.DataContext>
+        <viewModels:MainViewModel />
+    </Design.DataContext>
 
     <Panel>
         <controls:NodeGraphControl x:DataType="nodes:NodeGraphViewModel" x:CompileBindings="True"
-                                   ViewPort = "{Binding CurrentViewPort, Mode=OneWayToSource}">
+                                   ViewPort="{Binding CurrentViewPort, Mode=OneWayToSource}"
+                                   VisibleNodes="{Binding VisibleNodes}">
             <controls:NodeGraphControl.DataContext>
-                <nodes:NodeGraphViewModel/> 
+                <nodes:NodeGraphViewModel />
             </controls:NodeGraphControl.DataContext>
         </controls:NodeGraphControl>
     </Panel>

@@ -4,6 +4,9 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Shintaku.ViewModels.Nodes;
 
 namespace Shintaku.Controls;
 
@@ -12,15 +15,32 @@ public class NodeGraphControl : TemplatedControl
     private Canvas? _canvas;
     private bool _isCanvasDragging;
     private Point _oldPointerPos;
+    
     private Rect _viewPort = Rect.Empty;
+    private List<NodeViewModel> _visibleNodes = new();
 
     public static readonly DirectProperty<NodeGraphControl, Rect> ViewPortProperty =
-        AvaloniaProperty.RegisterDirect<NodeGraphControl, Rect>("ViewPort", o => o.ViewPort, (o, v) => o.ViewPort = v);
+        AvaloniaProperty.RegisterDirect<NodeGraphControl, Rect>(nameof(ViewPort),
+            o => o.ViewPort,
+            (o,
+                v) => o.ViewPort = v);
+    
+    public static readonly DirectProperty<NodeGraphControl, List<NodeViewModel>> VisibleNodesProperty =
+        AvaloniaProperty.RegisterDirect<NodeGraphControl, List<NodeViewModel>>(nameof(VisibleNodes),
+            o => o.VisibleNodes,
+            (o,
+                v) => o.VisibleNodes = v);
 
     public Rect ViewPort
     {
         get => _viewPort;
         set => SetAndRaise(ViewPortProperty, ref _viewPort, value);
+    }
+
+    public List<NodeViewModel> VisibleNodes
+    {
+        get => _visibleNodes;
+        set => SetAndRaise(VisibleNodesProperty, ref _visibleNodes, value);
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -50,7 +70,7 @@ public class NodeGraphControl : TemplatedControl
     private void CanvasOnPointerMoved(object? sender, PointerEventArgs e)
     {
         if (!_isCanvasDragging) return;
-        
+
         var curPointerPos = e.GetPosition(_canvas);
         var delta = _oldPointerPos - curPointerPos;
         _oldPointerPos = curPointerPos;
