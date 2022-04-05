@@ -1,0 +1,18 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Shintaku.Controls">
+    <Design.PreviewWith>
+        <controls:NodeGraphControl />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|NodeGraphControl">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+               <Canvas Name="PART_Canvas" Background="Gray">
+                   
+               </Canvas>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

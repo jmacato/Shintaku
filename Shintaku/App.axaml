@@ -8,5 +8,6 @@
 
     <Application.Styles>
         <FluentTheme Mode="Dark"/>
+        <StyleInclude Source="avares://Shintaku/Controls/NodeGraphControl.axaml"/>
     </Application.Styles>
 </Application>
