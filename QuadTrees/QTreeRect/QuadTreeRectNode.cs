@@ -1,4 +1,3 @@
-using System.Drawing;
 using QuadTrees.Common;
 using QuadTrees.Helper;
 

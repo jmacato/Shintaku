@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using QuadTrees.Common;
+﻿using QuadTrees.Common;
 using QuadTrees.QTreeRectF;
 
 namespace QuadTrees

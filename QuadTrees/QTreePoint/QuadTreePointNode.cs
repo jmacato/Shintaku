@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Drawing;
 using QuadTrees.Common;
 
 namespace QuadTrees.QTreePoint
