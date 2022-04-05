@@ -18,10 +18,10 @@ public partial class NodeGraphViewModel : ViewModelBase
 
     public NodeGraphViewModel()
     {
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < 2000; i++)
         {
-            var kX = _rnd.NextDouble() * 1000;
-            var kY = _rnd.NextDouble() * 1000;
+            var kX = _rnd.NextDouble() * 5000;
+            var kY = _rnd.NextDouble() * 5000;
             var kW = Math.Max(25,_rnd.NextDouble() * 100);
             var kH = Math.Max(25,_rnd.NextDouble() * 100);
 
@@ -33,7 +33,7 @@ public partial class NodeGraphViewModel : ViewModelBase
                 continue;
             }
             
-            _nodes.Add(new NodeViewModel(candidate));
+            _nodes.Add(new NodeViewModel(candidate, i));
         }
 
         this.WhenAnyValue(x => x.CurrentViewPort)

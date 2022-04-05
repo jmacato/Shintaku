@@ -8,9 +8,12 @@ namespace Shintaku.ViewModels.Nodes;
 public partial class NodeViewModel : ViewModelBase, IRectFQuadStorable
 {
     [ObservableProperty] private Rect _rect;
-
-    public NodeViewModel(Rect rect)
+    
+    public int ID { get; }
+    
+    public NodeViewModel(Rect rect, int id)
     {
         _rect = rect;
+        ID = id;
     }
 }
