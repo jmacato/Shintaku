@@ -48,7 +48,7 @@ public partial class NodeGraphViewModel : ViewModelBase
     private void ViewPortUpdated((Rect curView, double zoom) result)
     {
         var currentNodes = _nodes.GetObjects(result.curView);
-        Debug.WriteLine($"ViewPort: {result.curView} / Visible Objects {currentNodes.Count}/{_nodes.Count}");
+        Debug.WriteLine($"VirtualViewPort: {result.curView} / Visible Objects {currentNodes.Count}/{_nodes.Count}");
         VisibleNodes = currentNodes;
     }
 }

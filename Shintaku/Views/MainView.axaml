@@ -15,7 +15,7 @@
 
     <Panel>
         <controls:NodeGraphControl x:DataType="nodes:NodeGraphViewModel" x:CompileBindings="True"
-                                   ViewPort="{Binding CurrentViewPort, Mode=OneWayToSource}"
+                                   VirtualViewPort="{Binding CurrentViewPort, Mode=OneWayToSource}"
                                    VisibleNodes="{Binding VisibleNodes}"
                                    ZoomScalar="{Binding ZoomScalar, Mode=OneWayToSource}">
             <controls:NodeGraphControl.DataContext>
