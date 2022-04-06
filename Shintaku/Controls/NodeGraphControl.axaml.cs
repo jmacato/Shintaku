@@ -183,7 +183,7 @@ public class NodeGraphControl : TemplatedControl
         var newPointerPos = e.GetPosition(_canvas);
         var delta = _oldPointerPos - newPointerPos;
         _oldPointerPos = newPointerPos;
-        _currentPointerPos -= delta;
+        _currentPointerPos -= delta * (1 / _zoomScalar);
         UpdateMatrixAndViewPort();
     }
 
