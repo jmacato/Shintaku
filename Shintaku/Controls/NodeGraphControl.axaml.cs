@@ -5,6 +5,7 @@ using Avalonia.Input;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using Avalonia.Animation;
 using Avalonia.Media;
 using Shintaku.ViewModels.Nodes;
 
@@ -15,21 +16,29 @@ public class NodeGraphControl : TemplatedControl
     private Canvas? _canvas;
     private bool _isCanvasDragging;
     private Point _oldPointerPos;
-    
+
     private Rect _viewPort = Rect.Empty;
     private List<NodeViewModel> _visibleNodes = new();
 
     public static readonly DirectProperty<NodeGraphControl, Rect> ViewPortProperty =
         AvaloniaProperty.RegisterDirect<NodeGraphControl, Rect>(nameof(ViewPort),
             o => o.ViewPort,
-            (o,
-                v) => o.ViewPort = v);
-    
+            (o, v) => o.ViewPort = v);
+
     public static readonly DirectProperty<NodeGraphControl, List<NodeViewModel>> VisibleNodesProperty =
         AvaloniaProperty.RegisterDirect<NodeGraphControl, List<NodeViewModel>>(nameof(VisibleNodes),
             o => o.VisibleNodes,
-            (o,
-                v) => o.VisibleNodes = v);
+            (o, v) => o.VisibleNodes = v);
+
+    private double _scrollDelta = 100;
+    private double _zoomScalar = 1;
+
+    public static readonly DirectProperty<NodeGraphControl, double> ZoomScalarProperty
+        = AvaloniaProperty.RegisterDirect<NodeGraphControl, double>("ZoomScalar",
+            o => o.ZoomScalar,
+            (o, v) => o.ZoomScalar = v);
+
+    private Matrix _mat = Matrix.Identity;
 
     public Rect ViewPort
     {
@@ -41,6 +50,12 @@ public class NodeGraphControl : TemplatedControl
     {
         get => _visibleNodes;
         set => SetAndRaise(VisibleNodesProperty, ref _visibleNodes, value);
+    }
+
+    public double ZoomScalar
+    {
+        get { return _zoomScalar; }
+        set { SetAndRaise(ZoomScalarProperty, ref _zoomScalar, value); }
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -57,6 +72,7 @@ public class NodeGraphControl : TemplatedControl
         _canvas.PointerPressed += CanvasOnPointerPressed;
         _canvas.PointerReleased += CanvasOnPointerReleased;
         _canvas.PointerMoved += CanvasOnPointerMoved;
+        _canvas.PointerWheelChanged += CanvasOnPointerWheelChanged;
 
         _canvas.WhenAnyValue(x => x.Bounds)
             .Subscribe(CanvasBoundsChanged);
@@ -65,27 +81,48 @@ public class NodeGraphControl : TemplatedControl
             .Subscribe(NewVisibleNodes);
     }
 
+
+    private void CanvasOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        var curPos = e.GetPosition(_canvas) + _viewPort.Position;
+
+        _scrollDelta = Math.Clamp(_scrollDelta + e.Delta.Y, -300, 300);
+        ZoomScalar = Math.Clamp(_scrollDelta / 100, 0.1, 3);
+
+        _mat = ScaleAt(_zoomScalar, _zoomScalar, curPos.X, curPos.Y);
+    }
+
+
+    public Matrix ScaleAt(double scaleX, double scaleY, double centerX, double centerY)
+    {
+        return new Matrix(scaleX, 0,
+            0, scaleY,
+            centerX - scaleX * centerX, centerY - scaleY * centerY);
+    }
+
     private void NewVisibleNodes(List<NodeViewModel> newList)
     {
         if (_canvas is null)
         {
             return;
         }
-        
+
         _canvas.Children.Clear();
 
         foreach (var nodeViewModel in newList)
         {
             var newContent = new Panel();
             newContent.DataContext = nodeViewModel;
-             
-            var finalPos = nodeViewModel.Rect.Position - _viewPort.Position;
+
+            var transformedRect = nodeViewModel.Rect.TransformToAABB(_mat);
+
+            var finalPos = transformedRect.Position - _viewPort.Position;
             Canvas.SetLeft(newContent, finalPos.X);
             Canvas.SetTop(newContent, finalPos.Y);
-            newContent.Width = nodeViewModel.Rect.Width;
-            newContent.Height = nodeViewModel.Rect.Height;
-            newContent.Background= Brushes.Aqua;
-            
+            newContent.Width = transformedRect.Width;
+            newContent.Height = transformedRect.Height;
+            newContent.Background = Brushes.Aqua;
+
             _canvas.Children.Add(newContent);
         }
     }
