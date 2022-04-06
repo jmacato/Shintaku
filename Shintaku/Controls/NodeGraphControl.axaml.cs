@@ -125,14 +125,14 @@ public class NodeGraphControl : TemplatedControl
     private void UpdateMatrixAndViewPort()
     {
         var scaleOrigin = _actualViewPortSize / 2;
-        ViewPortMatrix = Matrix.Identity*
-                         Matrix.CreateTranslation(_currentPointerPos.X, _currentPointerPos.Y)
-                         * ScaleAt(_zoomScalar, _zoomScalar, scaleOrigin.Width, scaleOrigin.Height) ;
         
-
+        ViewPortMatrix = Matrix.Identity *
+                         Matrix.CreateTranslation(_currentPointerPos.X, _currentPointerPos.Y) *
+                         ScaleAt(  _zoomScalar,   _zoomScalar, scaleOrigin.Width, scaleOrigin.Height);
+        
         var virtualRect = new Rect(0, 0, _actualViewPortSize.Width, _actualViewPortSize.Height);
 
-        VirtualViewPort = virtualRect.TransformToAABB(_viewPortMatrix);
+        VirtualViewPort = virtualRect.TransformToAABB(_viewPortMatrix.Invert());
     }
 
 
@@ -151,8 +151,6 @@ public class NodeGraphControl : TemplatedControl
         }
 
         _canvas.Children.Clear();
-
-
         
         foreach (var nodeViewModel in newList)
         {
@@ -169,20 +167,6 @@ public class NodeGraphControl : TemplatedControl
 
             _canvas.Children.Add(newContent);
         }
-        
-        
-        var transformedViewPort = new Rect(0, 0, _actualViewPortSize.Width, _actualViewPortSize.Height)
-            .TransformToAABB(_viewPortMatrix);
-        var vP = new Border();
-        
-        Canvas.SetLeft(vP, transformedViewPort.X);
-        Canvas.SetTop(vP, transformedViewPort.Y);
-        
-        vP.Width = transformedViewPort.Width;
-        vP.Height = transformedViewPort.Height;
-        vP.BorderBrush = Brushes.Red;
-        vP.BorderThickness = Thickness.Parse("2");
-        _canvas.Children.Add(vP);
     }
 
 
