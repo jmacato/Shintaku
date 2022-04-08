@@ -8,10 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
-using Avalonia.Animation;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Shintaku.ViewModels.Nodes;
 
 namespace Shintaku.Controls;
@@ -196,8 +193,7 @@ public class NodeGraphControl : TemplatedControl
                 .Select(x => (x as Control, x.DataContext as NodeViewModel))
                 .Where(x => x.Item1 is not null && x.Item2 is not null)
                 .ToList();
-
-
+            
             foreach (var (u, v) in t)
             {
                 if (v is null || u is null)
