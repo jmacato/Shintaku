@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using QuadTrees;
@@ -9,11 +10,12 @@ public partial class NodeViewModel : ViewModelBase, IRectFQuadStorable
 {
     [ObservableProperty] private Rect _rect;
     
-    public int ID { get; }
     
-    public NodeViewModel(Rect rect, int id)
+     public Guid Guid { get; }
+    
+    public NodeViewModel(Rect rect)
     {
         _rect = rect;
-        ID = id;
+        Guid = Guid.NewGuid();
     }
 }

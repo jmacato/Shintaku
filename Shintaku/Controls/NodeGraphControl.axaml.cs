@@ -5,6 +5,9 @@ using Avalonia.Input;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reactive.Linq;
 using Avalonia.Animation;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
@@ -106,30 +109,41 @@ public class NodeGraphControl : TemplatedControl
             .Subscribe(CanvasBoundsChanged);
 
         this.WhenAnyValue(x => x.VisibleNodes)
-            .Subscribe(NewVisibleNodes);
+            .Buffer(2, 1)
+            .Select(b => (Previous: b[0], Current: b[1]))
+            .Subscribe(b => NewVisibleNodes(b.Previous, b.Current));
     }
 
 
     private void CanvasOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
-        bool zoomOnCursor = false;
-
         var curPos = e.GetPosition(_canvas) + _virtualViewPort.Position;
 
-        _scrollDelta = Math.Clamp(_scrollDelta + e.Delta.Y, -300, 300);
-        ZoomScalar = Math.Clamp(_scrollDelta / 100, 0.1, 3);
+        _scrollDelta = Math.Clamp(_scrollDelta + e.Delta.Y, -100, 100);
+
+        ZoomScalar = MapRange(_scrollDelta, -100, 100, 0.3, 2);
 
         UpdateMatrixAndViewPort();
+    }
+
+    private static double MapRange(
+        double value,
+        double sourceMin,
+        double sourceMax,
+        double targetMin,
+        double targetMax)
+    {
+        return (value - sourceMin) / (sourceMax - sourceMin) * (targetMax - targetMin) + targetMin;
     }
 
     private void UpdateMatrixAndViewPort()
     {
         var scaleOrigin = _actualViewPortSize / 2;
-        
+
         ViewPortMatrix = Matrix.Identity *
                          Matrix.CreateTranslation(_currentPointerPos.X, _currentPointerPos.Y) *
-                         ScaleAt(  _zoomScalar,   _zoomScalar, scaleOrigin.Width, scaleOrigin.Height);
-        
+                         ScaleAt(_zoomScalar, _zoomScalar, scaleOrigin.Width, scaleOrigin.Height);
+
         var virtualRect = new Rect(0, 0, _actualViewPortSize.Width, _actualViewPortSize.Height);
 
         VirtualViewPort = virtualRect.TransformToAABB(_viewPortMatrix.Invert());
@@ -143,30 +157,71 @@ public class NodeGraphControl : TemplatedControl
             centerX - scaleX * centerX, centerY - scaleY * centerY);
     }
 
-    private void NewVisibleNodes(List<NodeViewModel> newList)
+    private void NewVisibleNodes(List<NodeViewModel> previousList, List<NodeViewModel> newList)
     {
         if (_canvas is null)
         {
             return;
         }
 
-        _canvas.Children.Clear();
-        
-        foreach (var nodeViewModel in newList)
-        {
-            var newContent = new Panel();
-            newContent.DataContext = nodeViewModel;
+        var removedObjects = 0;
+        var addedObjects = 0;
 
+        var currentRect = new Rect(new Point(), ActualViewPortSize);
+
+        foreach (var nodeViewModel in newList.Where(x => !previousList.Contains(x)))
+        {
             var transformedRect = nodeViewModel.Rect.TransformToAABB(_viewPortMatrix);
+
+            if (!currentRect.Intersects(transformedRect))
+            {
+                continue;
+            }
+
+            var newContent = new ContentControl();
+            newContent.DataContext = nodeViewModel;
 
             Canvas.SetLeft(newContent, transformedRect.X);
             Canvas.SetTop(newContent, transformedRect.Y);
             newContent.Width = transformedRect.Width;
             newContent.Height = transformedRect.Height;
             newContent.Background = Brushes.Aqua;
-
             _canvas.Children.Add(newContent);
+            addedObjects++;
         }
+
+        foreach (var nodeViewModel in previousList.Where(newList.Contains))
+        {
+            var t = _canvas.Children
+                .Select(x => (x as Control, x.DataContext as NodeViewModel))
+                .Where(x => x.Item1 is not null && x.Item2 is not null)
+                .ToList();
+
+
+            foreach (var (u, v) in t)
+            {
+                if (v is null || u is null)
+                {
+                    return;
+                }
+
+                var transformedRect = v.Rect.TransformToAABB(_viewPortMatrix);
+
+                if (!currentRect.Intersects(transformedRect))
+                {
+                    _canvas.Children.Remove(u);
+                    removedObjects++;
+                }
+
+                Canvas.SetLeft(u, transformedRect.X);
+                Canvas.SetTop(u, transformedRect.Y);
+                u.Width = transformedRect.Width;
+                u.Height = transformedRect.Height;
+            }
+        }
+
+        if (removedObjects > 0 || addedObjects > 0)
+            Debug.WriteLine($"Objects removed: {removedObjects} / added: {addedObjects}");
     }
 
 

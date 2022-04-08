@@ -35,14 +35,11 @@ public partial class NodeGraphViewModel : ViewModelBase
                 continue;
             }
             
-            _nodes.Add(new NodeViewModel(candidate, i));
+            _nodes.Add(new NodeViewModel(candidate));
         }
 
         this.WhenAnyValue(x => x.CurrentViewPort, x=>x.ZoomScalar)
             .Subscribe(ViewPortUpdated);
-        
-        
-         
     }
 
     private void ViewPortUpdated((Rect curView, double zoom) result)
