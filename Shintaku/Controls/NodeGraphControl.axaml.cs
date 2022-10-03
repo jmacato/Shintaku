@@ -88,13 +88,8 @@ public class NodeGraphControl : TemplatedControl
 
     private void TouchPanelOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
-        bool zoomOnCursor = false;
-
-        _currentPointerPos = e.GetPosition(_touchPanel) + _virtualViewPort.Position;
-
         _scrollDelta = Math.Clamp(_scrollDelta + e.Delta.Y, -300, 300);
         _zoomScalar = Math.Clamp(_scrollDelta / 100, 0.1, 3);
-
         UpdateMatrixAndViewPort();
     }
 
