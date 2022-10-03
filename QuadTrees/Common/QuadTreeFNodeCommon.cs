@@ -226,13 +226,13 @@ namespace QuadTrees.Common
             }
         }
 
-        protected void VerifyNodeAssertions(Rect Rect)
+        protected void VerifyNodeAssertions(Rect rect)
         {
-            Debug.Assert(Rect.Width > 0);
-            Debug.Assert(Rect.Height > 0);
+            Debug.Assert(rect.Width > 0);
+            Debug.Assert(rect.Height > 0);
         }
 
-        protected abstract TNode CreateNode(Rect Rect);
+        protected abstract TNode CreateNode(Rect rect);
 
         public IEnumerable<TNode> GetChildren()
         {
@@ -443,11 +443,11 @@ namespace QuadTrees.Common
             return x;
         }
 
-        private UInt32 MortonIndex2(Point Point, double minX, double minY, double width, double height)
+        private UInt32 MortonIndex2(Point point, double minX, double minY, double width, double height)
         {
-            Point = new Point(Point.X - minX, Point.Y - minY);
-            var pX = (UInt32) (UInt16.MaxValue*Point.X/width);
-            var pY = (UInt32) (UInt16.MaxValue*Point.Y/height);
+            point = new Point(point.X - minX, point.Y - minY);
+            var pX = (UInt32) (UInt16.MaxValue*point.X/width);
+            var pY = (UInt32) (UInt16.MaxValue*point.Y/height);
 
             return EncodeMorton2(pX, pY);
         }
@@ -849,7 +849,7 @@ namespace QuadTrees.Common
             }
         }
 
-        protected abstract bool CheckContains(Rect Rect, T data);
+        protected abstract bool CheckContains(Rect rect, T data);
 
 
         /// <summary>

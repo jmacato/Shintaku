@@ -18,10 +18,10 @@ namespace QuadTrees.QTreeRectF
             : base(parent, rect)
         {
         }
-        protected override QuadTreeRectNode<T, Point> CreateNode(Rect Rect)
+        protected override QuadTreeRectNode<T, Point> CreateNode(Rect rect)
         {
-            VerifyNodeAssertions(Rect);
-            return new QuadTreeRectPointInvNode<T>(this, Rect);
+            VerifyNodeAssertions(rect);
+            return new QuadTreeRectPointInvNode<T>(this, rect);
         }
 
         protected override bool CheckIntersects(Point searchRect, T data)

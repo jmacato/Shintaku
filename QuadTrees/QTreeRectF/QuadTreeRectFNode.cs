@@ -22,9 +22,9 @@ namespace QuadTrees.QTreeRectF
         {
         }
 
-        protected override bool CheckContains(Rect Rect, T data)
+        protected override bool CheckContains(Rect rect, T data)
         {
-            return Rect.Contains(data.AbsoluteRect);
+            return rect.Contains(data.AbsoluteRect);
         }
     }
 
@@ -41,10 +41,10 @@ namespace QuadTrees.QTreeRectF
         internal QuadTreeRectFNode(QuadTreeRectFNode<T> parent, Rect rect) : base(parent, rect)
         {
         }
-        protected override QuadTreeRectNode<T, Rect> CreateNode(Rect Rect)
+        protected override QuadTreeRectNode<T, Rect> CreateNode(Rect rect)
         {
-            VerifyNodeAssertions(Rect);
-            return new QuadTreeRectFNode<T>(this, Rect);
+            VerifyNodeAssertions(rect);
+            return new QuadTreeRectFNode<T>(this, rect);
         }
 
         protected override bool CheckIntersects(Rect searchRect, T data)

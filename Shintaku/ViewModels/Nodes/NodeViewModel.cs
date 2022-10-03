@@ -8,7 +8,7 @@ namespace Shintaku.ViewModels.Nodes;
 
 public partial class NodeViewModel : ViewModelBase, IRectFQuadStorable
 {
-    public int ID { get; }
+    public int Id { get; }
 
     [ObservableProperty] private Rect _absoluteRect;
     [ObservableProperty] private Rect _viewportRect;
@@ -20,7 +20,7 @@ public partial class NodeViewModel : ViewModelBase, IRectFQuadStorable
     public NodeViewModel(Rect rect, int id)
     {
         AbsoluteRect = rect;
-        ID = id;
+        Id = id;
     }
 
     /// <inheritdoc />
