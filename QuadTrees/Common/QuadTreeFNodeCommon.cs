@@ -855,7 +855,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="searchRect">The Rect to find objects in.</param>
+        /// <param name="searchRect">The AbsoluteRect to find objects in.</param>
         public List<T> GetObjects(TQuery searchRect)
         {
             var results = new List<T>();
@@ -869,7 +869,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="searchRect">The Rect to find objects in.</param>
+        /// <param name="searchRect">The AbsoluteRect to find objects in.</param>
         public IEnumerable<T> EnumObjects(TQuery searchRect)
         {
             Stack<TNode> stack = new Stack<TNode>();
@@ -920,7 +920,7 @@ namespace QuadTrees.Common
                         }
                     }
 
-                    // Get the objects for the search Rect from the children
+                    // Get the objects for the search AbsoluteRect from the children
                     if (node.ChildTl != null)
                     {
                         stack.Push(node.ChildTl);
@@ -942,7 +942,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="searchRect">The Rect to find objects in.</param>
+        /// <param name="searchRect">The AbsoluteRect to find objects in.</param>
         /// <param name="put"></param>
         public void GetObjects(TQuery searchRect, Action<T> put)
         {
@@ -967,7 +967,7 @@ namespace QuadTrees.Common
                     }
                 }
 
-                // Get the objects for the search Rect from the children
+                // Get the objects for the search AbsoluteRect from the children
                 if (ChildTl != null)
                 {
                     Debug.Assert(ChildTl != this);
@@ -1103,7 +1103,7 @@ namespace QuadTrees.Common
 
             if (xVy > 0)
             {
-                incrementer = QuadRect.Height * yB * 0.3f;
+                incrementer = AbsoluteRect.Height * yB * 0.3f;
                 if (balance.Y < (1 + ReBalanceOffset))
                 {
                     //Top Heavy
@@ -1118,7 +1118,7 @@ namespace QuadTrees.Common
                     return;
                 }
 
-                Rect searchRect;
+                AbsoluteRect searchRect;
                 
                 List<T> buffer = new List<T>();
                 List<T> bufferCopy = new List<T>();
@@ -1127,11 +1127,11 @@ namespace QuadTrees.Common
                 {
                     if (inv)
                     {
-                        searchRect = new Rect(QuadRect.X, QuadRect.Y - incrementer, QuadRect.Width, incrementer);
+                        searchRect = new AbsoluteRect(AbsoluteRect.X, AbsoluteRect.Y - incrementer, AbsoluteRect.Width, incrementer);
                     }
                     else
                     {
-                        searchRect = new Rect(QuadRect.X, QuadRect.Y, QuadRect.Width, incrementer);
+                        searchRect = new AbsoluteRect(AbsoluteRect.X, AbsoluteRect.Y, AbsoluteRect.Width, incrementer);
                     }
 
                     GetObjects(searchRect, buffer.Add);

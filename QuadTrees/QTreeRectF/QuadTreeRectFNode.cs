@@ -24,7 +24,7 @@ namespace QuadTrees.QTreeRectF
 
         protected override bool CheckContains(Rect Rect, T data)
         {
-            return Rect.Contains(data.Rect);
+            return Rect.Contains(data.AbsoluteRect);
         }
     }
 
@@ -49,7 +49,7 @@ namespace QuadTrees.QTreeRectF
 
         protected override bool CheckIntersects(Rect searchRect, T data)
         {
-            return searchRect.Intersects(data.Rect);
+            return searchRect.Intersects(data.AbsoluteRect);
         }
 
         public override bool ContainsObject(QuadTreeObject<T, QuadTreeRectNode<T, Rect>> qto)
@@ -68,7 +68,7 @@ namespace QuadTrees.QTreeRectF
         }
         protected override Point GetMortonPoint(T p)
         {
-            return p.Rect.Position; 
+            return p.AbsoluteRect.Position; 
         }
     }
 }
