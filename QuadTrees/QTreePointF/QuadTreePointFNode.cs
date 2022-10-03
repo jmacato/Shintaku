@@ -26,15 +26,15 @@ namespace QuadTrees.QTreePoint
         {
         }
 
-        protected override QuadTreePointNode<T> CreateNode(Rect Rect)
+        protected override QuadTreePointNode<T> CreateNode(Rect rect)
         {
-            VerifyNodeAssertions(Rect);
-            return new QuadTreePointNode<T>(this, Rect);
+            VerifyNodeAssertions(rect);
+            return new QuadTreePointNode<T>(this, rect);
         }
 
-        protected override bool CheckContains(Rect Rect, T data)
+        protected override bool CheckContains(Rect rect, T data)
         {
-            return Rect.Contains(data.Point);
+            return rect.Contains(data.Point);
         }
 
         public override bool ContainsObject(QuadTreeObject<T, QuadTreePointNode<T>> qto)

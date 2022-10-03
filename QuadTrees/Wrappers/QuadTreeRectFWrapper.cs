@@ -12,14 +12,14 @@ namespace QuadTrees.Wrappers
     /// A simple container for a rectangle in a QuadTree
     /// </summary>
     public struct QuadTreeRectFWrapper : IRectFQuadStorable
-    {
-        private Rect _rect;
-
-        public Rect Rect => _rect;
+    { 
+        public Rect AbsoluteRect { get;  } 
+        public Rect ViewportRect { get; set; }
 
         public QuadTreeRectFWrapper(Rect rect)
         {
-            _rect = rect;
+            AbsoluteRect = rect;
+            ViewportRect = Rect.Empty;
         }
     }
 }

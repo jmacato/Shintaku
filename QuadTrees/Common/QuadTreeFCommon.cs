@@ -52,14 +52,14 @@ namespace QuadTrees.Common
         }
 
         /// <summary>
-        /// Gets the Rect that bounds this QuadTree
+        /// Gets the AbsoluteRect that bounds this QuadTree
         /// </summary>
         public Rect QuadRect => QuadTreePointRoot.QuadRect;
 
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="rect">The Rect to find objects in.</param>
+        /// <param name="rect">The AbsoluteRect to find objects in.</param>
         public List<TObject> GetObjects(TQuery rect)
         {
             return QuadTreePointRoot.GetObjects(rect);
@@ -79,7 +79,7 @@ namespace QuadTrees.Common
         /// <summary>
         /// Get the objects in this tree that intersect with the specified rectangle.
         /// </summary>
-        /// <param name="rect">The Rect to find objects in.</param>
+        /// <param name="rect">The AbsoluteRect to find objects in.</param>
         /// <param name="results">A reference to a list that will be populated with the results.</param>
         public void GetObjects(TQuery rect, List<TObject> results)
         {

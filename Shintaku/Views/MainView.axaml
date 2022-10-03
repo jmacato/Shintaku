@@ -14,10 +14,7 @@
     </Design.DataContext>
 
     <Panel>
-        <controls:NodeGraphControl x:DataType="nodes:NodeGraphViewModel" x:CompileBindings="True"
-                                   VirtualViewPort="{Binding CurrentViewPort, Mode=OneWayToSource}"
-                                   VisibleNodes="{Binding VisibleNodes}"
-                                   ZoomScalar="{Binding ZoomScalar, Mode=OneWayToSource}">
+        <controls:NodeGraphControl x:DataType="nodes:NodeGraphViewModel" x:CompileBindings="True" Nodes="{Binding AllNodes}">
             <controls:NodeGraphControl.DataContext>
                 <nodes:NodeGraphViewModel />
             </controls:NodeGraphControl.DataContext>

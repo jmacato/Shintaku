@@ -4,7 +4,7 @@ using Avalonia;
 namespace QuadTrees.QTreePoint
 {
     /// <summary>
-    /// Interface to define Rect, so that QuadTree knows how to store the object.
+    /// Interface to define AbsoluteRect, so that QuadTree knows how to store the object.
     /// </summary>
     public interface IPointQuadStorable
     {

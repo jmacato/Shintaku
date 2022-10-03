@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:Shintaku.Controls">
+        xmlns:controls="using:Shintaku.Controls"
+        xmlns:nodes="clr-namespace:Shintaku.ViewModels.Nodes">
     <Design.PreviewWith>
         <controls:NodeGraphControl />
     </Design.PreviewWith>
@@ -9,9 +10,29 @@
         <!-- Set Defaults -->
         <Setter Property="Template">
             <ControlTemplate>
-               <Canvas Name="PART_Canvas" Background="Gray">
-                   
-               </Canvas>
+                <Panel Name="PART_Panel" Background="Gray">
+                    <Panel.Styles>
+                        <Style Selector="ContentPresenter">
+                            <Setter Property="(Canvas.Left)" Value="{Binding Left}"/>
+                            <Setter Property="(Canvas.Top)" Value="{Binding Top}"/> 
+                            <Setter Property="Width" Value="{Binding Width}"/>
+                            <Setter Property="Height" Value="{Binding Height}"/>
+                        </Style>
+                    </Panel.Styles>
+                    <ItemsControl Name="PART_ItemsControl" Items="{TemplateBinding VisibleNodes}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas Name="PART_Canvas" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="nodes:NodeViewModel">
+                                <Panel Background="DarkGreen">
+                                </Panel>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                </Panel>
             </ControlTemplate>
         </Setter>
     </Style>
