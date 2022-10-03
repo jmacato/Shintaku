@@ -71,7 +71,10 @@ public class NodeGraphControl : TemplatedControl
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-        _touchPanel = e.NameScope.Find<Panel>("PART_Panel")!;
+
+        _touchPanel = e.NameScope.Find<Panel>("PART_Panel");
+
+        if (_touchPanel is null) return;
 
         _touchPanel.PointerPressed += TouchPanelOnPointerPressed;
         _touchPanel.PointerReleased += TouchPanelOnPointerReleased;
