@@ -4,135 +4,113 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
-using Avalonia.Animation;
-using Avalonia.Controls.Shapes;
-using Avalonia.Media;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Shintaku.ViewModels.Nodes;
+using System.Collections.Generic; 
+using System.Linq; 
+using QuadTrees;
+using QuadTrees.QTreeRectF; 
 
 namespace Shintaku.Controls;
 
 public class NodeGraphControl : TemplatedControl
-{
-    private Canvas? _canvas;
+{ 
+    
+    private Panel _touchPanel;
     private bool _isCanvasDragging;
     private Point _oldPointerPos;
 
     private Rect _virtualViewPort = Rect.Empty;
-    private List<NodeViewModel> _visibleNodes = new();
+    private IEnumerable<IRectFQuadStorable> _visibleNodes  ;
     private double _scrollDelta = 100;
     private double _zoomScalar = 1;
 
-    public static readonly DirectProperty<NodeGraphControl, Rect> VirtualViewPortProperty =
-        AvaloniaProperty.RegisterDirect<NodeGraphControl, Rect>(nameof(VirtualViewPort),
-            o => o.VirtualViewPort,
-            (o, v) => o.VirtualViewPort = v);
-
-    public static readonly DirectProperty<NodeGraphControl, List<NodeViewModel>> VisibleNodesProperty =
-        AvaloniaProperty.RegisterDirect<NodeGraphControl, List<NodeViewModel>>(nameof(VisibleNodes),
-            o => o.VisibleNodes,
-            (o, v) => o.VisibleNodes = v);
-
-
-    public static readonly DirectProperty<NodeGraphControl, double> ZoomScalarProperty
-        = AvaloniaProperty.RegisterDirect<NodeGraphControl, double>("ZoomScalar",
-            o => o.ZoomScalar,
-            (o, v) => o.ZoomScalar = v);
-
-    private Size _actualViewPortSize;
-
-    public static readonly DirectProperty<NodeGraphControl, Size> ActualViewPortSizeProperty
-        = AvaloniaProperty.RegisterDirect<NodeGraphControl, Size>("ActualViewPortSize",
-            o => o.ActualViewPortSize,
-            (o, v) => o.ActualViewPortSize = v);
-
-    private Matrix _viewPortMatrix;
-
-    public static readonly DirectProperty<NodeGraphControl, Matrix> ViewPortMatrixProperty =
-        AvaloniaProperty.RegisterDirect<NodeGraphControl, Matrix>("ViewPortMatrix",
-            o => o.ViewPortMatrix,
-            (o, v) => o.ViewPortMatrix = v);
+    public static readonly DirectProperty<NodeGraphControl, IEnumerable<IRectFQuadStorable>>
+        VisibleNodesProperty =
+            AvaloniaProperty.RegisterDirect<NodeGraphControl, IEnumerable<IRectFQuadStorable>>(
+                nameof(VisibleNodes),
+                o => o.VisibleNodes,
+                (o, v) => o.VisibleNodes = v);
 
     private Point _currentPointerPos;
 
-    public Rect VirtualViewPort
-    {
-        get => _virtualViewPort;
-        set => SetAndRaise(VirtualViewPortProperty, ref _virtualViewPort, value);
-    }
-
-    public List<NodeViewModel> VisibleNodes
+    public IEnumerable<IRectFQuadStorable> VisibleNodes
     {
         get => _visibleNodes;
         set => SetAndRaise(VisibleNodesProperty, ref _visibleNodes, value);
     }
 
-    public double ZoomScalar
-    {
-        get => _zoomScalar;
-        set => SetAndRaise(ZoomScalarProperty, ref _zoomScalar, value);
-    }
+    private IEnumerable<IRectFQuadStorable> _nodes;
 
-    public Size ActualViewPortSize
-    {
-        get => _actualViewPortSize;
-        set => SetAndRaise(ActualViewPortSizeProperty, ref _actualViewPortSize, value);
-    }
+    public static readonly DirectProperty<NodeGraphControl, IEnumerable<IRectFQuadStorable>> NodesProperty =
+        AvaloniaProperty.RegisterDirect<NodeGraphControl, IEnumerable<IRectFQuadStorable>>("Nodes",
+            o => o.Nodes,
+            (o, v) => o.Nodes = v);
 
-    public Matrix ViewPortMatrix
+    private Size _ActualViewPortSize;
+
+    public IEnumerable<IRectFQuadStorable> Nodes
     {
-        get => _viewPortMatrix;
-        set => SetAndRaise(ViewPortMatrixProperty, ref _viewPortMatrix, value);
+        get => _nodes;
+        set => SetAndRaise(NodesProperty, ref _nodes, value); 
+    }
+    
+    private readonly QuadTreeRectF<IRectFQuadStorable> _quadTree = new ();
+
+
+    /// <inheritdoc />
+    protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+    {
+
+        if (change.Property == NodesProperty)
+        {
+            _quadTree.Clear();
+            var u = (IEnumerable<IRectFQuadStorable>)change.NewValue.Value;
+
+            _quadTree.AddRange(u.ToList());
+        }
+        
+        base.OnPropertyChanged(change);
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
+        _touchPanel = e.NameScope.Find<Panel>("PART_Panel");
 
-        _canvas = e.NameScope.Find<Canvas>("PART_Canvas");
+        _touchPanel.PointerPressed += TouchPanelOnPointerPressed;
+        _touchPanel.PointerReleased += TouchPanelOnPointerReleased;
+        _touchPanel.PointerMoved += TouchPanelOnPointerMoved;
+        _touchPanel.PointerWheelChanged += TouchPanelOnPointerWheelChanged;
 
-        if (_canvas is null)
-        {
-            return;
-        }
-
-        _canvas.PointerPressed += CanvasOnPointerPressed;
-        _canvas.PointerReleased += CanvasOnPointerReleased;
-        _canvas.PointerMoved += CanvasOnPointerMoved;
-        _canvas.PointerWheelChanged += CanvasOnPointerWheelChanged;
-
-        _canvas.WhenAnyValue(x => x.Bounds)
+        _touchPanel.WhenAnyValue(x => x.Bounds)
             .Subscribe(CanvasBoundsChanged);
-
-        this.WhenAnyValue(x => x.VisibleNodes)
-            .Subscribe(NewVisibleNodes);
     }
 
 
-    private void CanvasOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    private void TouchPanelOnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
         bool zoomOnCursor = false;
 
-        var curPos = e.GetPosition(_canvas) + _virtualViewPort.Position;
+        _currentPointerPos = e.GetPosition(_touchPanel) + _virtualViewPort.Position;
 
         _scrollDelta = Math.Clamp(_scrollDelta + e.Delta.Y, -300, 300);
-        ZoomScalar = Math.Clamp(_scrollDelta / 100, 0.1, 3);
+        _zoomScalar = Math.Clamp(_scrollDelta / 100, 0.1, 3);
 
         UpdateMatrixAndViewPort();
     }
 
     private void UpdateMatrixAndViewPort()
     {
-        var scaleOrigin = _actualViewPortSize / 2;
-        
-        ViewPortMatrix = Matrix.Identity *
-                         Matrix.CreateTranslation(_currentPointerPos.X, _currentPointerPos.Y) *
-                         ScaleAt(  _zoomScalar,   _zoomScalar, scaleOrigin.Width, scaleOrigin.Height);
-        
-        var virtualRect = new Rect(0, 0, _actualViewPortSize.Width, _actualViewPortSize.Height);
+        var scaleOrigin = _ActualViewPortSize / 2;
 
-        VirtualViewPort = virtualRect.TransformToAABB(_viewPortMatrix.Invert());
+        var viewPortMatrix = Matrix.Identity *
+                             Matrix.CreateTranslation(_currentPointerPos.X, _currentPointerPos.Y) *
+                             ScaleAt(_zoomScalar, _zoomScalar, scaleOrigin.Width, scaleOrigin.Height);
+
+        var virtualRect = new Rect(0, 0, _ActualViewPortSize.Width, _ActualViewPortSize.Height);
+        var virtualViewPort = virtualRect.TransformToAABB(viewPortMatrix.Invert());
+        var visibleNodes =  _quadTree.GetObjects(virtualViewPort).ToList();
+        visibleNodes.ForEach(x => x.ViewportRect = x.AbsoluteRect.TransformToAABB(viewPortMatrix));
+        VisibleNodes = visibleNodes;
     }
 
 
@@ -142,45 +120,18 @@ public class NodeGraphControl : TemplatedControl
             0, scaleY,
             centerX - scaleX * centerX, centerY - scaleY * centerY);
     }
-
-    private void NewVisibleNodes(List<NodeViewModel> newList)
-    {
-        if (_canvas is null)
-        {
-            return;
-        }
-
-        _canvas.Children.Clear();
-        
-        foreach (var nodeViewModel in newList)
-        {
-            var newContent = new Panel();
-            newContent.DataContext = nodeViewModel;
-
-            var transformedRect = nodeViewModel.Rect.TransformToAABB(_viewPortMatrix);
-
-            Canvas.SetLeft(newContent, transformedRect.X);
-            Canvas.SetTop(newContent, transformedRect.Y);
-            newContent.Width = transformedRect.Width;
-            newContent.Height = transformedRect.Height;
-            newContent.Background = Brushes.Aqua;
-
-            _canvas.Children.Add(newContent);
-        }
-    }
-
-
+    
     private void CanvasBoundsChanged(Rect currentBounds)
     {
-        ActualViewPortSize = currentBounds.Size;
+        _ActualViewPortSize = currentBounds.Size;
         UpdateMatrixAndViewPort();
     }
 
-    private void CanvasOnPointerMoved(object? sender, PointerEventArgs e)
+    private void TouchPanelOnPointerMoved(object? sender, PointerEventArgs e)
     {
         if (!_isCanvasDragging) return;
 
-        var newPointerPos = e.GetPosition(_canvas);
+        var newPointerPos = e.GetPosition(_touchPanel);
         var delta = _oldPointerPos - newPointerPos;
         _oldPointerPos = newPointerPos;
         _currentPointerPos -= delta * (1 / _zoomScalar);
@@ -188,16 +139,16 @@ public class NodeGraphControl : TemplatedControl
     }
 
 
-    private void CanvasOnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void TouchPanelOnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         Cursor = new Cursor(StandardCursorType.Arrow);
         _isCanvasDragging = false;
     }
 
-    private void CanvasOnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void TouchPanelOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         Cursor = new Cursor(StandardCursorType.Hand);
-        _oldPointerPos = e.GetPosition(_canvas);
+        _oldPointerPos = e.GetPosition(_touchPanel);
         _isCanvasDragging = true;
     }
 }
